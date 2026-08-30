@@ -76,9 +76,11 @@ describe("reconcileBillingAgainstTerms - volume discounts", () => {
     const findings = reconcileBillingAgainstTerms(terms, records);
 
     expect(findings).toHaveLength(1);
-    expect(findings[0].anomalyType).toBe("unapplied_volume_discount");
-    expect(findings[0].leakedAmountCents).toBe(10_000);
-    expect(findings[0].severity).toBe("medium");
+    const [finding] = findings;
+    expect(finding).toBeDefined();
+    expect(finding!.anomalyType).toBe("unapplied_volume_discount");
+    expect(finding!.leakedAmountCents).toBe(10_000);
+    expect(finding!.severity).toBe("medium");
   });
 
   it("does not flag a record where the discount was already applied", () => {
@@ -151,8 +153,10 @@ describe("reconcileBillingAgainstTerms - SLA penalties", () => {
     const findings = reconcileBillingAgainstTerms(terms, records);
 
     expect(findings).toHaveLength(1);
-    expect(findings[0].anomalyType).toBe("sla_penalty_missing");
-    expect(findings[0].leakedAmountCents).toBe(10_000);
+    const [finding] = findings;
+    expect(finding).toBeDefined();
+    expect(finding!.anomalyType).toBe("sla_penalty_missing");
+    expect(finding!.leakedAmountCents).toBe(10_000);
   });
 
   it("does not flag a record when no SLA breach occurred", () => {
