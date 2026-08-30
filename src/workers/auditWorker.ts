@@ -138,7 +138,7 @@ function getBooleanField(source: Record<string, unknown>, key: string): boolean 
     return source[key] === true;
 }
 
-function severityForLeakedCents(leakedCents: number): AnomalySeverity {
+export function severityForLeakedCents(leakedCents: number): AnomalySeverity {
     if (leakedCents >= 100_000) return 'critical';
     if (leakedCents >= 25_000) return 'high';
     if (leakedCents >= 1_000) return 'medium';
@@ -155,7 +155,7 @@ function severityForLeakedCents(leakedCents: number): AnomalySeverity {
  * whichever upstream billing system produced the invoice, not by this
  * application.
  */
-function reconcileBillingAgainstTerms(
+export function reconcileBillingAgainstTerms(
     terms: ContractTerm[],
     billingRecords: BillingRecord[]
   ): ReconciliationFinding[] {
