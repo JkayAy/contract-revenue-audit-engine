@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { Worker, type Job } from 'bullmq';
 import Anthropic from '@anthropic-ai/sdk';
 import { getWorkerRedisClient } from '../lib/redis';
@@ -399,4 +400,6 @@ function startWorker(): Worker<AuditJobPayload> {
   return worker;
 }
 
-startWorker();
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  startWorker();
+}
