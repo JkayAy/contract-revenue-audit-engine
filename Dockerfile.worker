@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1
+
+# Standalone worker process image, isolated from the Next.js web server
+# per the architecture spec: the BullMQ audit worker runs as its own
+# Node.js process/container so a slow or crashing Claude extraction job
+# can never block or take down the request/response path of the web app.
+#
+# The worker runs directly against TypeScript source via tsx rather than
+# a separate compile step, matching the "worker" script in package.json.
+# This keeps the worker's build identical to local development, at the
+# cost of needing devDependencies (tsx, typescript) present at runtime.
+
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NPM_CONFIG_LOGLEVEL=warn
+
+RUN addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 worker
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --chown=worker:nodejs package.json ./
+COPY --chown=worker:nodejs tsconfig.json ./
+COPY --chown=worker:nodejs src ./src
+
+USER worker
+
+CMD ["npx", "tsx", "src/workers/auditWorker.ts"]
