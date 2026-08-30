@@ -1,0 +1,1 @@
+This directory holds static assets served at the site root (favicon, robots.txt, images). Kept in Git via this placeholder so the Docker build's public/ COPY step always has a valid source directory.
